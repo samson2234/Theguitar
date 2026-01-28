@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  hashedPassword String?
+  role          Role      @default(STUDENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  courses       Course[]  @relation("InstructorCourses") 
+  enrollments   Enrollment[]
+  progress      LessonProgress[]
+  purchases     Purchase[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  imageUrl    String?
+  price       Float?
+  isPublished Boolean  @default(false)
+  
+  instructorId String
+  instructor   User    @relation("InstructorCourses", fields: [instructorId], references: [id], onDelete: Cascade)
+
+  modules     Module[]
+  enrollments Enrollment[]
+  purchases   Purchase[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([instructorId])
+}
+
+model Module {
+  id       String @id @default(cuid())
+  title    String
+  position Int
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  lessons  Lesson[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+}
+
+model Lesson {
+  id          String  @id @default(cuid())
+  title       String
+  description String? @db.Text
+  videoUrl    String? 
+  position    Int
+  isFree      Boolean @default(false)
+
+  moduleId    String
+  module      Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  userProgress LessonProgress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([moduleId])
+}
+
+model LessonProgress {
+  id String @id @default(cuid())
+  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  isCompleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([lessonId])
+}
+
+model Enrollment {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  enrolledAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+model Purchase {
+  id String @id @default(cuid())
+  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([courseId])
+  @@unique([userId, courseId])
+}

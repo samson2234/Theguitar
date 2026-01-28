@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -20,10 +21,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={spaceGrotesk.variable}>
-      <body>
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={spaceGrotesk.variable}>
+        <body>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
