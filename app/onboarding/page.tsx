@@ -16,28 +16,40 @@ export default function OnboardingPage() {
         setIsLoading(true);
         try {
             // Update user metadata in Clerk
-            await user.update({
-                unsafeMetadata: {
-                    role: selectedRole,
-                },
-            });
+            try {
+                await user.update({
+                    unsafeMetadata: {
+                        role: selectedRole,
+                    },
+                });
+            } catch (clerkError: any) {
+                console.error('Clerk update error:', clerkError);
+                throw new Error(`Clerk Error: ${clerkError.message || 'Failed to update profile'}`);
+            }
 
             // Sync with database
-            const response = await fetch('/api/auth/sync-user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: user.id,
-                    email: user.emailAddresses[0]?.emailAddress,
-                    name: user.fullName,
-                    role: selectedRole,
-                }),
-            });
+            let response;
+            try {
+                response = await fetch('/api/auth/sync-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: user.id,
+                        email: user.emailAddresses[0]?.emailAddress,
+                        name: user.fullName,
+                        role: selectedRole,
+                    }),
+                });
+            } catch (netError: any) {
+                console.error('Network error:', netError);
+                throw new Error(`Network Error: ${netError.message || 'Failed to connect to server'}`);
+            }
 
             if (!response.ok) {
-                throw new Error('Failed to sync user');
+                const data = await response.json().catch(() => ({}));
+                throw new Error(`Database Error: ${data.error || response.statusText || 'Failed to sync user'}`);
             }
 
             // Redirect based on role
@@ -46,9 +58,9 @@ export default function OnboardingPage() {
             } else {
                 router.push('/dashboard');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error setting role:', error);
-            alert('Failed to set role. Please try again.');
+            alert(error.message || 'Failed to set role. Please try again.');
             setIsLoading(false);
         }
     };

@@ -103,6 +103,14 @@ After setting up Clerk:
 - Check that your DATABASE_URL is correct
 - Make sure you've run `npx prisma generate` and `npx prisma db push`
 
+### Error: "This password has been found as part of a breach"
+- This is a security feature enabled by default in Clerk.
+- **Solution 1**: Use a strong, unique password (e.g., use a password generator).
+- **Solution 2**: Disable this check in Clerk Dashboard:
+  1. Go to **User & Authentication** > **Email, Phone, Username**
+  2. Click the settings icon (⚙️) next to **Password**
+  3. Uncheck **"Check for pwned passwords"** or **"Block compromised passwords"**
+
 ---
 
 ## 📚 Resources
