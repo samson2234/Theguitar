@@ -2,12 +2,14 @@
 
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
+import Navbar from '../components/Navbar';
 
 export default function StudentDashboard() {
     const { user } = useUser();
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-dark)', paddingTop: '100px' }}>
+            <Navbar />
             <div className="section-container" style={{ padding: '2rem' }}>
                 <div style={{ marginBottom: '3rem' }}>
                     <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>
