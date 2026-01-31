@@ -32,7 +32,7 @@ export default clerkMiddleware(async (auth, request) => {
 
     // Check if user is trying to access instructor routes
     if (isInstructorRoute(request)) {
-        const userRole = sessionClaims?.metadata?.role as string;
+        const userRole = (sessionClaims?.metadata as { role?: string })?.role;
 
         if (userRole !== 'INSTRUCTOR' && userRole !== 'ADMIN') {
             // Redirect non-instructors away from instructor routes
