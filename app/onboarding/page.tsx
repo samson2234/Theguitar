@@ -15,42 +15,27 @@ export default function OnboardingPage() {
 
         setIsLoading(true);
         try {
-            // Update user metadata in Clerk
-            try {
-                await user.update({
-                    unsafeMetadata: {
-                        role: selectedRole,
-                    },
-                });
-            } catch (clerkError: any) {
-                console.error('Clerk update error:', clerkError);
-                throw new Error(`Clerk Error: ${clerkError.message || 'Failed to update profile'}`);
-            }
-
-            // Sync with database
-            let response;
-            try {
-                response = await fetch('/api/auth/sync-user', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        userId: user.id,
-                        email: user.emailAddresses[0]?.emailAddress,
-                        name: user.fullName,
-                        role: selectedRole,
-                    }),
-                });
-            } catch (netError: any) {
-                console.error('Network error:', netError);
-                throw new Error(`Network Error: ${netError.message || 'Failed to connect to server'}`);
-            }
+            // Sync with database and update Clerk metadata via backend
+            const response = await fetch('/api/auth/sync-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: user.id,
+                    email: user.emailAddresses[0]?.emailAddress,
+                    name: user.fullName,
+                    role: selectedRole,
+                }),
+            });
 
             if (!response.ok) {
                 const data = await response.json().catch(() => ({}));
-                throw new Error(`Database Error: ${data.error || response.statusText || 'Failed to sync user'}`);
+                throw new Error(`Error: ${data.error || response.statusText || 'Failed to sync account'}`);
             }
+
+            // Force a session refresh to pick up the new metadata
+            await user.reload();
 
             // Redirect based on role
             if (selectedRole === 'INSTRUCTOR') {

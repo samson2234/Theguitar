@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 
 export async function POST(req: NextRequest) {
     try {
@@ -17,7 +17,15 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        // Check if user already exists
+        // 1. Update Clerk Public Metadata (so it can be used in middleware)
+        const client = await clerkClient();
+        await client.users.updateUser(clerkUserId, {
+            publicMetadata: {
+                role: role,
+            },
+        });
+
+        // 2. Check if user already exists in database
         const existingUser = await db.user.findUnique({
             where: { id: userId },
         });
@@ -36,7 +44,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ user: updatedUser });
         }
 
-        // Create new user
+        // 3. Create new user in database
         const newUser = await db.user.create({
             data: {
                 id: userId,

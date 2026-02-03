@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "./components/Navbar";
 import GuitarInterface from "./components/GuitarInterface";
 import Pricing from "./components/Pricing";
+import Link from "next/link";
 import Image from "next/image";
 
 export default function Home() {
@@ -10,7 +11,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="hero">
+      <section className="hero" id="hero">
         <div className="hero-container">
           <div className="hero-content">
             <div className="hero-badge">
@@ -63,7 +64,7 @@ export default function Home() {
             </p>
           </div>
           <div className="features-grid">
-            <div className="feature-card">
+            <Link href="#hero" className="feature-card" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon">
                 <svg
                   width="28"
@@ -85,8 +86,8 @@ export default function Home() {
                 Visual chord diagrams that show exactly where to place your
                 fingers. Practice anywhere, anytime.
               </p>
-            </div>
-            <div className="feature-card">
+            </Link>
+            <Link href="/courses" className="feature-card" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon">
                 <svg
                   width="28"
@@ -108,8 +109,8 @@ export default function Home() {
                 200+ professionally filmed lessons from beginner basics to
                 advanced techniques.
               </p>
-            </div>
-            <div className="feature-card">
+            </Link>
+            <Link href="/dashboard" className="feature-card" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon">
                 <svg
                   width="28"
@@ -131,8 +132,8 @@ export default function Home() {
                 Set goals, track your practice time, and watch your skills
                 improve over time.
               </p>
-            </div>
-            <div className="feature-card">
+            </Link>
+            <Link href="/library" className="feature-card" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon">
                 <svg
                   width="28"
@@ -155,8 +156,8 @@ export default function Home() {
                 Learn your favorite songs with tabs, chords, and play-along
                 backing tracks.
               </p>
-            </div>
-            <div className="feature-card">
+            </Link>
+            <Link href="/ai-feedback" className="feature-card" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon">
                 <svg
                   width="28"
@@ -180,8 +181,8 @@ export default function Home() {
                 Get real-time feedback on your playing through our audio
                 recognition technology.
               </p>
-            </div>
-            <div className="feature-card">
+            </Link>
+            <Link href="/community" className="feature-card" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon">
                 <svg
                   width="28"
@@ -204,7 +205,7 @@ export default function Home() {
                 Connect with fellow learners, share progress, and get tips from
                 experienced players.
               </p>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
